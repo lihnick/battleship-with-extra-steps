@@ -6,10 +6,15 @@ const game = () => {
 
   const api = {
     addPlayer: () => {
-      const sessionId = short.generate();
+      const sessionId = short.generate()
       const newUser = user({sessionId});
       allUsers[sessionId] = newUser;
+      console.log(allUsers);
       return sessionId;
+    },
+    message: (data) => {
+      console.log(allUsers);
+      console.log(data);
     },
   };
   return api;

@@ -10,16 +10,19 @@ const gameRef = game();
 app.use(express.static('public'));
 
 wsServer.on('connection', (socket) => {
-  socket.on('open', (usr) => {
-    const result = gameRef.addPlayer();
-    socket.send(result);
-  });
+  console.log('test');
+  const response = gameRef.addPlayer();
+  socket.send(response);
+
   socket.on('message', (msg) => {
-    console.log(`msg: ${msg}`);
+    const response = gameRef.message(msg);
+    socket.send(response);
   });
+
   socket.on('close', (end) => {
     console.log(`end: ${end}`);
   });
+
   socket.on('error', (err) => {
     console.log(err);
   });

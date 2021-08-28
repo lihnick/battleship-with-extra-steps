@@ -5,26 +5,31 @@
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Document</title>
+  <script src="https://cdn.jsdelivr.net/npm/vue@2/dist/vue.js"></script>
+  <style>
+    .login {
+      position: absolute;
+      top: 0;
+      right: 0;
+      bottom: 100px;
+      left: 0;
+      margin: auto;
+      width: 250px;
+      height: 30px;
+      border-radius: 4px;
+      font-size: 18px;
+      font-family: Arial, Helvetica, sans-serif;
+      border: 1px solid #ccc;
+      box-shadow: inset 0px 0px 4px lightgray;
+      padding: 4px 10px;
+    }
+  </style>
 </head>
 <body>
-  Hello
-  <script>
-    const socket = new WebSocket('ws://localhost:8000');
-    socket.onopen = event => {
-      console.log(`open`, event);
-    };
-    socket.onmessage = message => {
-      console.log(`message`, message);
-    };
-    socket.onclose = close => {
-      console.log(`close`, close);
-    };
-    socket.onerror = error => {
-      console.log(`error`, error);
-    }
-    function send(msg) {
-      socket.send(msg);
-    }
-  </script>
+  <div id="app">
+    <input class="login" type="text" placeholder="Username" v-model="userName" v-on:keyup="userLogin" />
+  </div>
+
+  <script src="./js/main.js"></script>
 </body>
 </html>

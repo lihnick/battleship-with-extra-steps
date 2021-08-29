@@ -6,16 +6,21 @@ initWebsocket();
 const app = new Vue({
   el: '#app',
   data: {
-    showLobby: false,
+    showState: {
+      userLogin: true,
+      lobbyLogin: false,
+      lobbyDetails: false,
+    },
     userName: '',
     userId: '',
     lobbyId: '',
+    lobbyDetails: [],
   },
   methods: {
     userNameChange: (event) => {
       if (event.keyCode === 13) {
         message.send({ type: 'name', userName: app.userName }, socket);
-        app.showLobby = true;
+        app.showState = { ...app.showState, userLogin: false, lobbyLogin: true };
       }
     },
     lobbyIdChange: (event) => {
@@ -26,11 +31,16 @@ const app = new Vue({
     joinLobby: () => {
       if (app.lobbyId) {
         message.send({ type: 'join', lobbyId: app.lobbyId }, socket);
+        app.showState = { ...app.showState, lobbyLogin: false, lobbyDetails: true };
       }
     },
     makeLobby: () => {
       message.send({ type: 'make' }, socket);
-    }
+      app.showState = { ...app.showState, lobbyLogin: false, lobbyDetails: true };
+    },
+    startLobby: () => {
+
+    },
   }
 });
 

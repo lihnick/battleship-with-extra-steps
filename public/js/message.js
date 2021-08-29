@@ -33,9 +33,10 @@ const message = {
   },
   // User notified when lobby is created by server
   madeLobby(app, data, socket) {
-    console.log(data);
+    app.lobbyId = data.lobbyId;
+    app.lobbyDetails = [{userId: app.userId, userName: app.userName}];
   },
   joinLobby(app, data, socket) {
-    console.log(data);
+    app.lobbyDetails = data.users;
   }
 };

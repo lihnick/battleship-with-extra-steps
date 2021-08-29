@@ -1,17 +1,35 @@
 
 let socket;
 
+initWebsocket();
+
 const app = new Vue({
   el: '#app',
   data: {
+    showLobby: false,
     userName: '',
+    userId: '',
+    lobbyId: '',
   },
   methods: {
-    userLogin: (event) => {
-      console.log()
+    userNameChange: (event) => {
       if (event.keyCode === 13) {
-        initWebsocket();
+        message.send({ type: 'name', userName: app.userName }, socket);
+        app.showLobby = true;
       }
+    },
+    lobbyIdChange: (event) => {
+      if (event.keyCode === 13) {
+        app.joinLobby();
+      }
+    },
+    joinLobby: () => {
+      if (app.lobbyId) {
+        message.send({ type: 'join', lobbyId: app.lobbyId }, socket);
+      }
+    },
+    makeLobby: () => {
+      message.send({ type: 'make' }, socket);
     }
   }
 });
@@ -20,25 +38,18 @@ function initWebsocket() {
   if (!socket) {
     console.log('initializing Websocket');
     socket = new WebSocket('ws://localhost:8000');
-    socket.onopen = socketOpenHandler;
-    socket.onmessage = socketMessageHandler;
-    socket.onclose = socketCloseHandler;
-    socket.onerror = socketErrorHandler;
+    socket.onopen = event => {
+      console.log('Connected', event);
+      console.log('Vue App', app);
+    };
+    socket.onmessage = event => {
+      message.read(app, event, socket);
+    }
+    socket.onclose = event => {
+      console.log(event);
+    };
+    socket.onerror = error => {
+      console.error(error);
+    };
   }
-};
-
-function socketOpenHandler(event) {
-  console.log(event);
-};
-
-function socketMessageHandler(event) {
-  console.log(event);
-};
-
-function socketCloseHandler(event) {
-  console.log(event);
-};
-
-function socketErrorHandler(error) {
-  console.error(error);
 };

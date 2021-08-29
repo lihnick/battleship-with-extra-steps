@@ -1,12 +1,12 @@
 
 const user = ({
   socket = null,
-  sessionId = '', 
+  userId = '', 
   lobbyId = '',
   userName = '',
 } = {}) => ({
   socket,
-  sessionId,
+  userId,
   lobbyId,
   userName,
   setSocket(socket) {
@@ -15,6 +15,10 @@ const user = ({
   },
   setUserName(name) {
     this.userName = name;
+    return this;
+  },
+  setLobbyId(id) {
+    this.lobbyId = id;
     return this;
   }
 });

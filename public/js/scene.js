@@ -96,6 +96,6 @@ function onWindowResize() {
   renderer.setSize(window.innerWidth, window.innerHeight);
 }
 
-setupGraphics();
-registerEventListener();
-animate();
+// setupGraphics();
+// registerEventListener();
+// animate();

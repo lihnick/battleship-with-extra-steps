@@ -37,7 +37,9 @@ const message = {
     app.userId = data.userId;
   },
   listLobby(app, data, socket) {
-
+    const lobbyIds = data.lobbyIds;
+    lobbyIds.sort();
+    app.lobbyList = lobbyIds;
   },
   // User notified when lobby is created by server
   madeLobby(app, data, socket) {
@@ -45,6 +47,8 @@ const message = {
     app.lobbyDetails = [{userId: app.userId, userName: app.userName}];
   },
   joinLobby(app, data, socket) {
+    app.lobbyId = data.lobbyId;
+    app.lobbyName = data.lobbyName;
     app.lobbyDetails = data.users;
   },
   startLobby(app, data, socket) {

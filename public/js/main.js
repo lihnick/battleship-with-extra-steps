@@ -14,35 +14,36 @@ const app = new Vue({
     userName: '',
     userId: '',
     lobbyList: [],
+    lobbyName: '',
     lobbyId: '',
     lobbyDetails: [],
   },
   methods: {
     userNameChange(event) {
       if (event.keyCode === 13) {
-        message.send({ type: 'namePlayer', userName: app.userName }, socket);
-        message.send({ type: "listLobby" }, socket);
-        app.showState = { ...app.showState, userLogin: false, lobbyLogin: true };
+        message.send({ type: 'namePlayer', userName: this.userName }, socket);
+        message.send({ type: 'listLobby' }, socket);
+        this.showState = { ...this.showState, userLogin: false, lobbyLogin: true };
       }
     },
     lobbyIdChange(event) {
       if (event.keyCode === 13) {
-        app.joinLobby();
+        this.makeLobby(this.lobbyName);
       }
     },
-    joinLobby() {
-      if (app.lobbyId) {
-        message.send({ type: 'joinLobby', lobbyId: app.lobbyId }, socket);
-        app.showState = { ...app.showState, lobbyLogin: false, lobbyDetails: true };
-      }
+    joinLobby(lobbyId) {
+      console.log(lobbyId);
+      message.send({ type: 'joinLobby', lobbyId }, socket);
+      this.showState = { ...this.showState, lobbyLogin: false, lobbyDetails: true };
     },
     makeLobby() {
-      message.send({ type: 'makeLobby' }, socket);
-      app.showState = { ...app.showState, lobbyLogin: false, lobbyDetails: true };
+      console.log(`Creating new Lobby: ${this.lobbyName}`);
+      message.send({ type: 'makeLobby', lobbyName: this.lobbyName }, socket);
+      this.showState = { ...this.showState, lobbyLogin: false, lobbyDetails: true };
     },
     startLobby() {
-      message.send({ type: 'startLobby', lobbyId: app.lobbyId }, socket);
-      app.showState = { ...app.showState, lobbyDetails: false, gameBoard: true };
+      message.send({ type: 'startLobby', lobbyId: this.lobbyId }, socket);
+      this.showState = { ...this.showState, lobbyDetails: false, gameBoard: true };
     },
   }
 });

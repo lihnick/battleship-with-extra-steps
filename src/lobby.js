@@ -1,9 +1,11 @@
 
 const lobby = ({
   lobbyId = '',
+  lobbyName = '',
   users = [],
 } = {}) => ({
   lobbyId,
+  lobbyName,
   users,
   addUser(user) {
     user.setLobbyId(this.lobbyId);

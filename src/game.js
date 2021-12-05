@@ -4,7 +4,7 @@ const lobby = require('./lobby');
 
 const game = () => {
   const allUsers = {};
-  const allLobbies = {};
+  const allLobbies = {}; //{test: lobby({lobbyId: 'test', users: []})};
 
   const api = {
     read(data, socket) {
@@ -42,6 +42,9 @@ const game = () => {
       socket.userId = userId;
       socket.send(JSON.stringify({ type: 'newPlayer', userId: userId }));
     },
+    disconnect(socket) {
+      console.log(`User disconnected: ${socket.userId}`);
+    },
     updateUserName(message, socket) {
       if (message && 'userName' in message) {
         const user = allUsers[socket.userId];
@@ -52,13 +55,16 @@ const game = () => {
       /*  Format
        Sender { type: 'listLobby' } => Sender { type: 'listLobby', lobbyIds: ['123', '555'] }
       */
-      const lobbyIds = Object.keys(allLobbies);
-      socket.send({ type: 'listLobby', lobbyIds });
+      const lobbyIds = Object.values(allLobbies).map((lobby) => ({
+        lobbyId: lobby.lobbyId,
+        lobbyName: lobby.lobbyName,
+      }));
+      socket.send(JSON.stringify({ type: 'listLobby', lobbyIds }));
     },
     joinLobby(message, socket) {
       /* Format
         Sender { type: 'joinLobby', lobbyId: '123' } =>
-        Sender, Lobby Users { type: 'joinLobby', users: [{ userId: '123', usernName: 'Existing User' }, { userId: '123', usernName: 'New User' }] }
+        Sender, Lobby Users { type: 'joinLobby', lobbyId: '123', lobbyName: 'Test', users: [{ userId: '123', usernName: 'Existing User' }, { userId: '123', usernName: 'New User' }] }
        */
       if (message && "lobbyId" in message && message.lobbyId in allLobbies) {
         const user = allUsers[socket.userId];
@@ -71,7 +77,7 @@ const game = () => {
         }));
         for (let lobbyUser of lobby.users) {
           lobbyUser.socket.send(
-            JSON.stringify({ type: "joinLobby", users: currentLobby })
+            JSON.stringify({ type: "joinLobby", lobbyId: lobby.lobbyId, lobbyName: lobby.lobbyName, users: currentLobby })
           );
         }
       } else {
@@ -85,21 +91,25 @@ const game = () => {
     },
     makeLobby(message, socket) {
       /* Format
-        Sender { type: 'makeLobby' } => Sender { type: 'makeLobby', lobbyId: '123' }
-                                     => Login User { type: 'listLobby', lobbyId: '123' }
+        Sender { type: 'makeLobby', lobbyName: 'Test' } => Sender { type: 'makeLobby', lobbyId: '123' }
+                                     => Login User { type: 'listLobby', lobbyIds: ['123', '555'] }
       */
       const lobbyId = short.generate();
       const user = allUsers[socket.userId];
-      const newLobby = lobby({ lobbyId, users: [user] });
+      const newLobby = lobby({ lobbyId, lobbyName: message.lobbyName, users: [user] });
       allLobbies[lobbyId] = newLobby;
-      socket.send(JSON.stringify({ type: 'makeLobby', lobbyId }));
-      
+      socket.send(JSON.stringify({ type: "makeLobby", lobbyId }));
+
+      const lobbyIds = Object.values(allLobbies).map((lobby) => ({
+        lobbyId: lobby.lobbyId,
+        lobbyName: lobby.lobbyName,
+      }));
       const loginUsers = Object.values(allUsers).filter(
-        usersWithNoLobby => !usersWithNoLobby.lobbyId
+        (usersWithNoLobby) => !usersWithNoLobby.lobbyId
       );
       for (let loginUser of loginUsers) {
         loginUser.socket.send(
-          JSON.stringify({ type: 'listLobby', lobbyId: lobbyId })
+          JSON.stringify({ type: "listLobby", lobbyIds })
         );
       }
     }

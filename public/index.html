@@ -14,19 +14,22 @@
 <body>
   <div id="app">
     <input v-show="showState.userLogin" class="login" type="text" placeholder="Username" v-model="userName" v-on:keyup="userNameChange" />
+    
     <div v-show="showState.lobbyLogin" class="lobbyPanel">
       <div>
-        <input type="text" placeholder="Lobby Code" v-model="lobbyId" v-on:keyup="lobbyIdChange" />
+        <input type="text" placeholder="Lobby Name" v-model="lobbyName" v-on:keyup="lobbyIdChange" />
         <button style="background: limegreen;" v-on:click="makeLobby">New Lobby</button>
       </div>
 
-        <button style="background: cornflowerblue;" v-on:click="joinLobby">Join Lobby</button>
+      <div v-for="lobby in lobbyList">
+        <button style="background: cornflowerblue;" v-on:click="joinLobby(lobby.lobbyId)">Join {{ lobby.lobbyName }}</button>
       </div>
     </div>
+
     <div v-show="showState.lobbyDetails" class="lobbyPanel">
       <div class="lobbyLabel">
         <div>
-          <h2>Lobby</h2>
+          <h3>{{ lobbyName }}</h3>
           <span>{{ lobbyId }}<span/>
         </div>
         <button style="background: limegreen;" v-on:click="startLobby">Start</button>

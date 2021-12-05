@@ -13,40 +13,42 @@ const app = new Vue({
     },
     userName: '',
     userId: '',
+    lobbyList: [],
     lobbyId: '',
     lobbyDetails: [],
   },
   methods: {
-    userNameChange: (event) => {
+    userNameChange(event) {
       if (event.keyCode === 13) {
-        message.send({ type: 'name', userName: app.userName }, socket);
+        message.send({ type: 'namePlayer', userName: app.userName }, socket);
+        message.send({ type: "listLobby" }, socket);
         app.showState = { ...app.showState, userLogin: false, lobbyLogin: true };
       }
     },
-    lobbyIdChange: (event) => {
+    lobbyIdChange(event) {
       if (event.keyCode === 13) {
         app.joinLobby();
       }
     },
-    joinLobby: () => {
+    joinLobby() {
       if (app.lobbyId) {
-        message.send({ type: 'join', lobbyId: app.lobbyId }, socket);
+        message.send({ type: 'joinLobby', lobbyId: app.lobbyId }, socket);
         app.showState = { ...app.showState, lobbyLogin: false, lobbyDetails: true };
       }
     },
-    makeLobby: () => {
-      message.send({ type: 'make' }, socket);
+    makeLobby() {
+      message.send({ type: 'makeLobby' }, socket);
       app.showState = { ...app.showState, lobbyLogin: false, lobbyDetails: true };
     },
-    startLobby: () => {
-
+    startLobby() {
+      message.send({ type: 'startLobby', lobbyId: app.lobbyId }, socket);
+      app.showState = { ...app.showState, lobbyDetails: false, gameBoard: true };
     },
   }
 });
 
 function initWebsocket() {
   if (!socket) {
-    console.log('initializing Websocket');
     socket = new WebSocket('ws://localhost:8000');
     socket.onopen = event => {
       console.log('Connected', event);

@@ -14,11 +14,13 @@
 <body>
   <div id="app">
     <input v-show="showState.userLogin" class="login" type="text" placeholder="Username" v-model="userName" v-on:keyup="userNameChange" />
-    <div v-show="showState.lobbyLogin">
-      <input type="text" placeholder="Lobby Code" v-model="lobbyId" v-on:keyup="lobbyIdChange" />
+    <div v-show="showState.lobbyLogin" class="lobbyPanel">
       <div>
-        <button style="background: cornflowerblue;" v-on:click="joinLobby">Join Lobby</button>
+        <input type="text" placeholder="Lobby Code" v-model="lobbyId" v-on:keyup="lobbyIdChange" />
         <button style="background: limegreen;" v-on:click="makeLobby">New Lobby</button>
+      </div>
+
+        <button style="background: cornflowerblue;" v-on:click="joinLobby">Join Lobby</button>
       </div>
     </div>
     <div v-show="showState.lobbyDetails" class="lobbyPanel">

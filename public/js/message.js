@@ -14,15 +14,20 @@ const message = {
     }
     if (data && 'type' in data && socket) {
       switch (data.type) {
-        case 'new':
+        case 'newPlayer':
           this.connect(app, data, socket);
           break;
-        case 'make':
+        case 'listLobby':
+          this.listLobby(app, data, socket);
+          break;
+        case 'makeLobby':
           this.madeLobby(app, data, socket);
           break;
-        case 'join':
+        case 'joinLobby':
           this.joinLobby(app, data, socket);
           break;
+        case 'startLobby':
+          this.startLobby(app, data, socket);
       }
     }
   },
@@ -31,6 +36,9 @@ const message = {
     sessionStorage.setItem('userId', data.userId);
     app.userId = data.userId;
   },
+  listLobby(app, data, socket) {
+
+  },
   // User notified when lobby is created by server
   madeLobby(app, data, socket) {
     app.lobbyId = data.lobbyId;
@@ -38,5 +46,8 @@ const message = {
   },
   joinLobby(app, data, socket) {
     app.lobbyDetails = data.users;
+  },
+  startLobby(app, data, socket) {
+    
   }
 };

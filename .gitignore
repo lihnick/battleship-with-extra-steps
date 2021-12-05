@@ -1,3 +1,12 @@
+
+# Folders to commit later on
+/Blender
+/public/asset
+/public/lib
+
+# macOSX files
+.DS_Store
+
 # Logs
 logs
 *.log

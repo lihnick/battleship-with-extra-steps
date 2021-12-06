@@ -10,6 +10,7 @@ const app = new Vue({
       userLogin: true,
       lobbyLogin: false,
       lobbyDetails: false,
+      gameOverlays: false,
     },
     userName: '',
     userId: '',
@@ -43,7 +44,7 @@ const app = new Vue({
     },
     startLobby() {
       message.send({ type: 'startLobby', lobbyId: this.lobbyId }, socket);
-      this.showState = { ...this.showState, lobbyDetails: false, gameBoard: true };
+      this.showState = { ...this.showState, lobbyDetails: false, gameOverlays: true };
     },
   }
 });

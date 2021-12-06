@@ -32,6 +32,9 @@ const game = () => {
           case "makeLobby":
             api.makeLobby(message, socket);
             break;
+          case "startLobby":
+            api.startLobby(message, socket);
+            break;
         }
       }
       socket.send(JSON.stringify({ type: "err", err: "Invalid dataObj" }));
@@ -44,6 +47,9 @@ const game = () => {
       socket.send(JSON.stringify({ type: "newPlayer", userId: userId }));
     },
     disconnect(socket) {
+      /* Format
+        Socket disconnect (+15 sec) => Lobby Users { type: 'leftLobby', lobbyId: '123', lobbyName: 'Room', users: [{ userId: '123', usernName: 'Remaining User' }]}
+      */
       const userId = socket.userId;
       console.log(`User disconnected: ${userId}`);
       if (userId in allUsers) {
@@ -166,6 +172,18 @@ const game = () => {
       );
       for (let loginUser of loginUsers) {
         loginUser.socket.send(JSON.stringify({ type: "listLobby", lobbyIds }));
+      }
+    },
+    startLobby(message, socket) {
+      /* Format
+        Sender { type: 'startLobby', lobbyId: '123'} => Lobby Users { type: 'startLobby' }
+      */
+      const lobbyId = message.lobbyId;
+      if (lobbyId in allLobbies) {
+        const lobby = allLobbies[lobbyId];
+        for (let user of lobby.users) {
+          user.socket.send(JSON.stringify({ type: "startLobby" }));
+        }
       }
     },
   };

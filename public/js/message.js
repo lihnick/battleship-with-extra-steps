@@ -61,6 +61,8 @@ const message = {
     app.lobbyDetails = data.users;
   },
   startLobby(app, data, socket) {
-    
+    setupGraphics();
+    registerEventListener();
+    animate();
   }
 };

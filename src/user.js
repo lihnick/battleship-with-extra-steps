@@ -4,11 +4,13 @@ const user = ({
   userId = '', 
   lobbyId = '',
   userName = '',
+  status = 'active',
 } = {}) => ({
   socket,
   userId,
   lobbyId,
   userName,
+  status,
   setSocket(socket) {
     this.socket = socket;
     return this;
@@ -20,7 +22,11 @@ const user = ({
   setLobbyId(id) {
     this.lobbyId = id;
     return this;
-  }
+  },
+  setStatus(status) {
+    this.status = status;
+    return this;
+  },
 });
 
 module.exports = user;

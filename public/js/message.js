@@ -26,8 +26,12 @@ const message = {
         case 'joinLobby':
           this.joinLobby(app, data, socket);
           break;
+        case 'leftLobby':
+          this.leftLobby(app, data, socket);
+          break;
         case 'startLobby':
           this.startLobby(app, data, socket);
+          break;
       }
     }
   },
@@ -47,6 +51,11 @@ const message = {
     app.lobbyDetails = [{userId: app.userId, userName: app.userName}];
   },
   joinLobby(app, data, socket) {
+    app.lobbyId = data.lobbyId;
+    app.lobbyName = data.lobbyName;
+    app.lobbyDetails = data.users;
+  },
+  leftLobby(app, data, socket) {
     app.lobbyId = data.lobbyId;
     app.lobbyName = data.lobbyName;
     app.lobbyDetails = data.users;

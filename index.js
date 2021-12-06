@@ -17,11 +17,11 @@ wsServer.on('connection', (socket) => {
   });
 
   socket.on('close', (end) => {
-    console.log(`end: ${end}`);
+    gameRef.disconnect(socket);
   });
 
   socket.on('error', (err) => {
-    console.log(err);
+    console.error(err);
   });
 });
 

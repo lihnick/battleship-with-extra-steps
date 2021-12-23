@@ -12,11 +12,13 @@ const game = () => {
       let message;
       if (!("userId" in socket)) {
         socket.send(JSON.stringify({ type: "err", err: "Missing userId" }));
+        socket.close(1011, "Missing userId");
       }
       try {
         message = JSON.parse(data);
       } catch {
         socket.send(JSON.stringify({ type: "err", err: "Bad json parse" }));
+        socket.close(1011, "Bad json parse");
       }
       if (message && "type" in message) {
         switch (message.type) {
@@ -35,9 +37,17 @@ const game = () => {
           case "startLobby":
             api.startLobby(message, socket);
             break;
+          case "playerMove":
+            api.playerMove(message, socket);
+            break;
+          default:
+            socket.send(
+              JSON.stringify({ type: "err", err: `Unsupported data type: ${message.type}` })
+            );
         }
+      } else {
+        socket.send(JSON.stringify({ type: "err", err: "Invalid dataObj" }));
       }
-      socket.send(JSON.stringify({ type: "err", err: "Invalid dataObj" }));
     },
     connect(socket) {
       const userId = short.generate();
@@ -99,6 +109,21 @@ const game = () => {
         clearTimeout(taskTracker[prevUserId]);
       }
     },
+    playerMove(message, socket) {
+      /* Format
+        Sender { type: 'playerMove', position: [1, 2, 3], angle: 12 } => Lobby User { type: 'playerMove', userId 123, position: [1, 2, 3], angle: 12 }
+      */
+      const userId = socket.userId;
+      const lobbyId = allUsers[userId].lobbyId;
+      const lobbyUsers = allLobbies[lobbyId].users;
+
+      for (let user of lobbyUsers) {
+        if (user.userId === socket.userId) {
+          continue;
+        }
+        user.socket.send(JSON.stringify({ ...message, userId }));
+      }
+    },
     updateUserName(message, socket) {
       if (message && "userName" in message) {
         const user = allUsers[socket.userId];
@@ -153,13 +178,13 @@ const game = () => {
         Sender { type: 'makeLobby', lobbyName: 'Test' } => Sender { type: 'makeLobby', lobbyId: '123' }
                                      => Login User { type: 'listLobby', lobbyIds: ['123', '555'] }
       */
-      const lobbyId = short.generate();
       const user = allUsers[socket.userId];
+      const lobbyId = short.generate();
       const newLobby = lobby({
         lobbyId,
         lobbyName: message.lobbyName,
-        users: [user],
       });
+      newLobby.addUser(user);
       allLobbies[lobbyId] = newLobby;
       socket.send(JSON.stringify({ type: "makeLobby", lobbyId }));
 

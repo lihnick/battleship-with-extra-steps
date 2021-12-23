@@ -10,7 +10,9 @@ const camera = new THREE.PerspectiveCamera(
 const ambientLight = new THREE.AmbientLight(0x999999);
 const loader = new THREE.GLTFLoader();
 
+let player;
 let controls;
+let lastDelta = performance.now();
 
 
 async function setupGraphics() {
@@ -36,16 +38,27 @@ async function setupGraphics() {
   scene.add(lights[1]);
   scene.add(lights[2]);
 
-
-  let mesh = await loadGlb({ filePath: '../asset/SkeeBall.glb', position: {x: 0, y: 0, z: 0}, rotation: {x: 0, y: 0, z: 0}, scale: {x: 1, y: 1, z: 1} });
   setupStaticObjects();
-  console.log(mesh);
+}
 
-  // setup a player object
+async function addPlayerObject(userId) {
+  let mesh = await loadGlb({
+    filePath: "../asset/SkeeBall.glb",
+    position: { x: 0, y: 0, z: 0 },
+    rotation: { x: 0, y: 0, z: 0 },
+    scale: { x: 1, y: 1, z: 1 },
+  });
+  mesh.name = userId;
+  return mesh;
+}
+
+async function addPlayerObjectWithCtrl(userId) {
+  let mesh = await addPlayerObject(userId);
   camera.rotation.set(Math.PI / 6, Math.PI, 0);
   camera.position.set(0, 5, -10);
   controls = new THREE.PlayerControls(camera, mesh);
-
+  player = mesh;
+  return mesh;
 }
 
 function setupStaticObjects() {
@@ -63,7 +76,21 @@ function animate() {
   if (controls) {
     controls.update();
   }
-  renderer.render(scene, camera);
+  let delta = performance.now();
+  if (delta - lastDelta >= 300) {
+    if (socket && player) {
+      message.send(
+        {
+          type: "playerMove",
+          position: player.position.toArray(),
+          angle: player.rotation.y,
+        },
+        socket
+      );
+    }
+    lastDelta = delta;
+  }
+    renderer.render(scene, camera);
 }
 
 function registerEventListener() {
